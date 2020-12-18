@@ -1,0 +1,78 @@
+import React from 'react';
+
+import './sign-in.style.scss';
+
+import FormInput from '../form-input/form-input.component';
+
+import CustomButton from '../custom-button/custom-button.component';
+
+class SignIn extends React.Component {
+    constructor() {
+        super();
+
+        this.state = {
+            email: '',
+            password: ''
+        }
+    }
+
+    handleSubmit = (event) => {
+        event.preventDefault();
+
+        this.setState({ email: '', password: '' });
+    }
+
+    //in this case, event.target = <input>
+    handleChange = (event) => {
+
+        const { name, value } = event.target;
+
+        this.setState({ [name]: value });
+    }
+
+    render() {
+        return (
+            <div className='sign-in'>
+                <h2 className='title' >I already have an account</h2>
+                <span className='sub-title'>Sign in with your email and password</span>
+
+                <form onSubmit={this.handleSubmit} >
+                    <FormInput
+                        type='email'
+                        name='email'
+                        value={this.state.email}
+                        handleChange={this.handleChange}
+                        label='Email'
+                        required
+                    />
+
+                    <FormInput
+                        type='password'
+                        name='password'
+                        value={this.state.password}
+                        handleChange={this.handleChange}
+                        label='Password'
+                        required
+                    />
+
+                    <CustomButton type='submit'>SIGN IN</CustomButton>
+                </form>
+            </div>
+        )
+    }
+
+}
+
+export default SignIn;
+
+//If user type 'taengoo777@gmail.com' in Email <input>
+//onChange => handleChange => this.setState({email: 'taengoo777@gmail.com'})
+// In this case, event.target =  <input
+                            //     type='email'
+                            //     name='email'
+                            //     value={this.state.email}
+                            //     onChange={this.handleChange}
+                            //     required
+                            //  /> 
+
+// event.target.value = 'taengoo777@gmail' which is the email user typed in email input
