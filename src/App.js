@@ -1,7 +1,11 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import Header from './components/header/header.component';
 import SignInAndSignUpPage from './pages/sign-in-sign-up-page/sign-in-sign-up-page.component';
+
+import { connect } from 'react-redux';
+
+import { setCurrentUser } from './redux/user/user.actions';
 
 import './App.css';
 
@@ -13,13 +17,6 @@ import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 
 
 class App extends React.Component {
-  constructor() {
-    super();
-
-    this.state = {
-      currentUser: null
-    }
-  }
 
   unsubscribeFromAuth = null;
 
@@ -27,23 +24,22 @@ class App extends React.Component {
   //first, it will run original function
   //When onAuthStateChanged is called again, it will unsubscribe and remove the original function
   componentDidMount() {
+    const { setCurrentUser } = this.props;
+
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
 
       if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
 
         userRef.onSnapshot(snapShot => {
-          this.setState({
-            currentUser: {
-              id: snapShot.id,
-              ...snapShot.data()
-            }
+          setCurrentUser({
+            id: snapShot.id,
+            ...snapShot.data()
           });
-          console.log(this.state);
         });
       }
 
-      this.setState({ currentUser: userAuth });
+      setCurrentUser(userAuth);
 
     })
   }
@@ -56,15 +52,26 @@ class App extends React.Component {
   render() {
     return (
       <div >
-        <Header currentUser={this.state.currentUser} />
+        <Header />
         <Switch>
           <Route exact path='/' component={HomePage} />
           <Route exact path='/shop' component={Shop} />
-          <Route path='/signin' component={SignInAndSignUpPage} />
+          <Route exact path='/signin' render={() => this.props.currentUser ? (<Redirect to='/' />) : (<SignInAndSignUpPage />)} />
         </Switch>
       </div>
     )
   }
 }
 
-export default App;
+//After writing this code, we can now use currentUser value from redux state and setCurrentUser method in App Component
+//mapStateToProps is for receiving this.state value
+//mapDispatchToProps is for using method writtin in a reducer
+const mapStateToProps = (state) => ({
+  currentUser: state.user.currentUser
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  setCurrentUser: (user) => dispatch(setCurrentUser(user))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

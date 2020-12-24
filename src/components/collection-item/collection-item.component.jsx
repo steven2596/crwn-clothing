@@ -3,9 +3,9 @@ import React from 'react';
 import './collection-item.style.scss';
 
 const CollectionItem = ({ id, name, imageUrl, price }) => {
-    console.log(imageUrl);
+
     return (
-        <div className='collection-item'>
+        <div key={id} className='collection-item'>
             <div
                 className='image'
                 style={{
