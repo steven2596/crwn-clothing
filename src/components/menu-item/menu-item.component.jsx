@@ -18,6 +18,7 @@ const MenuItem = ({ title, imageUrl, size, history, match, linkUrl }) => {
         </div >
     )
 }
+//withRouter is used  because we want to have access to history.push() method
 export default withRouter(MenuItem);
 
 // match.url+linkUrl = '/hats'

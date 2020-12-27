@@ -14,3 +14,7 @@ export const addItemToCart = (cartItems, cartItemToAdd) => {
 
     return [...cartItems, { ...cartItemToAdd, quantity: 1 }];
 };
+
+//Purpose of addItemToCart:
+//1. if added item is new, it will give quantity property to new item
+//2. if added item already exists, it will add 1 to quantity 
