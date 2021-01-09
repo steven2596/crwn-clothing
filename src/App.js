@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 
 import { setCurrentUser } from './redux/user/user.actions';
-import { auth, createUserProfileDocument } from './firebase/firebase.utils';
+import { auth, createUserProfileDocument, addCollectionAndDocuments } from './firebase/firebase.utils';
 
 import './App.css';
 
@@ -14,9 +14,7 @@ import HomePage from './pages/homepage/homepage.component';
 import Shop from './pages/shop/shop.component';
 import CheckOut from './pages/checkout/checkout.component';
 
-
 import { selectCurrentUser } from './redux/user/user.selectors';
-
 
 class App extends React.Component {
 
@@ -71,7 +69,8 @@ class App extends React.Component {
 //mapStateToProps is for receiving this.state value
 //mapDispatchToProps is for using method writtin in a reducer
 const mapStateToProps = createStructuredSelector({
-  currentUser: selectCurrentUser
+  currentUser: selectCurrentUser,
+
 });
 
 const mapDispatchToProps = (dispatch) => ({

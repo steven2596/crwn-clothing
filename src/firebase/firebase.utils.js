@@ -41,6 +41,50 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
     return userRef;
 };
 
+export const addCollectionAndDocuments = async (CollectionKey, objectsToAdd) => {
+    const collectionRef = firestore.collection(CollectionKey);
+
+    //Because of internet connection, we want whole batch of docs to add to collection if it's successful
+    //OR we want adding process of whole batch of docs to fail if it's failed
+    //In other words, ALL or Nothing
+    const batch = firestore.batch();
+    objectsToAdd.forEach(obj => {
+        //this will create uid for each object of objectsToAdd Array
+        const newDocRef = collectionRef.doc();
+        //this will add new documentReference and object to the Batch
+        batch.set(newDocRef, obj);
+    });
+    //this will commit all the writes in this batch.Once all writes have successfully written
+    //in the collection, the promise is resolved
+    return await batch.commit();
+}
+
+//This function take collectionSnapshot as a parameter. collections = collection snapshot
+//collections.docs gives us documents of that collection
+// doc.data() gives actual data inside that doc
+// We will add other infos like routeName, id
+export const convertCollectionSnapshotToMap = (collections) => {
+    const transformedCollection = collections.docs.map(doc => {
+        const { title, items } = doc.data();
+
+        return {
+            routeName: encodeURI(title.toLowerCase()),
+            id: doc.id,
+            title,
+            items
+        };
+    });
+
+    //Eg. hats: {id,item,title,route}
+    //Initial object is empty object
+    return transformedCollection.reduce((accumulator, collection) => {
+        accumulator[collection.title.toLowerCase()] = collection;
+        return accumulator;
+    }, {})
+
+};
+
+
 firebase.initializeApp(config);
 
 export const auth = firebase.auth();
